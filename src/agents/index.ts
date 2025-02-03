@@ -1,5 +1,5 @@
-import { getPerson } from './classifications'
-import { getTagging } from './extractions'
+import { getTagging } from './classifications'
+import { getPerson } from './extractions'
 import { getQuestion } from './prompts'
 
 class Agent {

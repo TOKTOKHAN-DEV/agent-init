@@ -11,16 +11,26 @@ const formatDocumentsAsString = (documents: Document[]) => {
 }
 
 export const getKnowledgeContext = async () => {
-  const text = fs.readFileSync('example.txt', 'utf8')
+  const text = fs.readFileSync(
+    process.cwd() + '/src/agents/knowleges/knowlege.txt',
+    'utf8',
+  )
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 })
   const docs = await textSplitter.createDocuments([text])
-  // Create a vector store from the documents.
+  const formattedDocs = docs.map((doc) => ({
+    pageContent: doc.pageContent.toString(), // 문자열로 변환
+    metadata: doc.metadata || {},
+  }))
+
   const vectorStore = await MemoryVectorStore.fromDocuments(
-    docs,
+    formattedDocs,
     new OpenAIEmbeddings(),
   )
   const vectorStoreRetriever = vectorStore.asRetriever()
-  return vectorStoreRetriever.pipe(formatDocumentsAsString)
+  return async (query: unknown) => {
+    const docs = await vectorStoreRetriever.getRelevantDocuments(String(query))
+    return formatDocumentsAsString(docs)
+  }
 }
 
 const SYSTEM_TEMPLATE = `다음의 맥락을 사용하여 마지막의 질문에 답변하세요.

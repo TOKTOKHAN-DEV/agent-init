@@ -4,25 +4,29 @@ import { z } from 'zod'
 
 import { model } from '@/agents/helper'
 
-import { PARSE_RESPONSE_PROMPT } from './templates'
+import { TAGGING_PROMPT } from './templates'
 
-const MISSING_FIELDS = 'name, hair_color, height_in_meters'
-const personSchema = z.object({
-  name: z.optional(z.string()).describe('The name of the person'),
-  hair_color: z
-    .optional(z.string())
-    .describe("The color of the person's hair if known"),
-  height_in_meters: z
-    .optional(z.string())
-    .describe('Height measured in meters'),
+const classificationSchema = z.object({
+  sentiment: z
+    .enum(['happy', 'neutral', 'sad'])
+    .describe('The sentiment of the text'),
+  language: z
+    .enum(['spanish', 'english', 'french', 'german', 'italian'])
+    .describe('The language the text is written in'),
 })
 
-export const getPerson = async (userMessage: string) => {
-  const structured_llm = model.withStructuredOutput(personSchema)
-  const parsePrompt = ChatPromptTemplate.fromTemplate(PARSE_RESPONSE_PROMPT)
-  const prompt = await parsePrompt.invoke({
+// Name is optional, but gives the models more clues as to what your schema represents
+const llmWihStructuredOutput = model.withStructuredOutput(
+  classificationSchema,
+  {
+    name: 'extractor',
+  },
+)
+
+export const getTagging = async (userMessage: string) => {
+  const taggingPrompt = ChatPromptTemplate.fromTemplate(TAGGING_PROMPT)
+  const prompt = await taggingPrompt.invoke({
     userMessage: userMessage,
-    missingFields: MISSING_FIELDS,
   })
-  return await structured_llm.invoke(prompt)
+  return await llmWihStructuredOutput.invoke(prompt)
 }

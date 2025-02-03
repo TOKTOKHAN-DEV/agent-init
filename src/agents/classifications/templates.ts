@@ -1,18 +1,5 @@
-export const PARSE_RESPONSE_PROMPT = `사용자의 응답에서 다음 정보를 추출해 주세요:
-응답: {userMessage}
-찾아야 할 정보: {missingFields}
+export const TAGGING_PROMPT = `다음 응답에서 원하는 정보를 추출하세요.
 
-다음과 같은 다양한 형식도 허용됩니다:
-- 이름: "홍길동", "길동", "홍. 길동" 등
-- 머리색: "검정", "갈색", "금발", "빨강" 등
-- 키(미터): "1.75", "1.75m", "175cm" 등
+'Classification' 함수에서 언급된 속성들만 추출하세요.
 
-JSON 형식으로 출력해 주세요. 예시:
-{{
-  "name": "홍길동",
-  "hair_color": "검정",
-  "height_in_meters": "1.75"
-}}
-
-- 사용자가 응답에서 제공하지 않은 데이터는 수집하지 마세요.
-- 찾을 수 없는 정보는 반드시 제외해 주세요.`
+응답: {userMessage}`

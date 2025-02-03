@@ -1,1 +1,1 @@
-export { getTagging } from './example'
+export { getPerson } from './example'
